@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+button:focus {
+  outline: 1px dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+}
+
+li {
+  list-style: none;
+}
+
+.header-link {
+  @apply my-1 text-sm text-gray-700 font-medium hover:text-indigo-500 md:mx-4 md:my-0
+}
+
+img {
+  width: 450px;
+  border-radius: 15px;
+}
+
+.firstLabel {
+  margin-right: 50px;
+}
+
+button:focus {
+  outline: 1px dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+}
