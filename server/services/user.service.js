@@ -1,6 +1,6 @@
-import User from '../models/User';
-const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken");
+import User from '../models/User.js';
+import bcrypt from 'bcrypt'
+import jwt from "jsonwebtoken";
 
 class UserService {
 
@@ -47,28 +47,42 @@ class UserService {
             })
     }
 
-    static findAllUsers = (req, res) => {
-        User.find()
-            .then(user => res.json(user))
-            .catch(err => res.json(err));
+    static findAllUsers = async (res) => {
+        try {
+            return res.status(200).json(await User.find())
+        } catch (err) {
+            return res.status(500).json(err)
+        }
     }
 
-    static getUser = (req, res) => {
-        User.find({ _id: req.params.id })
-            .then(user => res.json(user))
-            .catch(err => res.json(err));
+    static getUser = async (req, res) => {
+        try {
+            return res.status(200).json(await User.findOne({ _id: req.params.id }))
+        } catch (err) {
+            return res.status(404).json({ message: "Something went wrong", error: err})
+        }
     }
 
-    static updateUser = (req, res) => {
-        User.findOneAndUpdate({ _id: req.params.id }, { ...req.body }, { new: true, runValidators: true })
-            .then(updatedUser => res.json(updatedUser))
-            .catch(err => res.status(400).json(err))
+    static updateUser = async (req, res) => {
+        try {
+            const user = await User.findOneAndUpdate({ _id: req.params.id }, { ...req.body }, { new: true, runValidators: [true, "{PATH} is required" ]})
+            user._id = req.body._id
+            user.firstName = req.body.firstName
+            user.lastName = req.body.lastName
+            user.email = req.body.email
+            user.password = req.body.password
+            return res.status(200).json(await user.save())
+        } catch {
+            return res.status(422).json({ message: "Something went wrong", error: err })
+        }
     }
 
-    static deleteUser = (req, res) => {
-        User.deleteOne({ _id: req.params.id })
-            .then(deleteConfirmation => res.json(deleteConfirmation))
-            .catch(err => res.json(err))
+    static deleteUser = async (req, res) => {
+        try {
+            return res.status(200).json(await User.deleteOne({ _id: req.params.id }))
+        } catch (err) {
+            return res.status(404).json({ message: "Something went wrong", error: err })
+        }
     }
 
     static login = async (req, res) => {

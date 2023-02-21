@@ -1,6 +1,19 @@
 import { LockClosedIcon } from '@heroicons/react/20/solid'
 import { Link } from 'react-router-dom'
-const Login = () => {
+import React, { useState } from 'react'
+
+const Login = (props) => {
+    const { errors, onSubmitProp } = props
+    const [user, setUser] = useState({})
+
+
+    const changeHandler = (e) => {
+        setUser({ ...user, [e.target.name]: e.target.value })
+    }
+    const onSubmitHandler = e => {
+        e.preventDefault();
+        onSubmitProp(user)
+    }
     return (
         <>
             <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -16,34 +29,29 @@ const Login = () => {
                             </Link>
                         </p>
                     </div>
-                    <form className="mt-8 space-y-6" action="#" method="POST">
+                    <form onSubmit={onSubmitHandler} className="mt-8 space-y-6" action="#" method="POST">
+                    {errors ? <p className='text-red-500 font-bold' >{errors}</p> : ""}
                         <input type="hidden" name="remember" defaultValue="true" />
                         <div className="-space-y-px rounded-md shadow-sm">
                             <div>
-                                <label htmlFor="email-address" className="sr-only">
-                                    Email address
-                                </label>
+                                <label htmlFor="email" className="sr-only">Email</label>
                                 <input
-                                    id="email-address"
-                                    name="email"
-                                    type="email"
-                                    autoComplete="email"
-                                    required
                                     className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                                    placeholder="Email address"
+                                    onChange={(e) => changeHandler(e)}
+                                    value={user.email}
+                                    type="text"
+                                    name="email"
+                                    placeholder="Email Address"
                                 />
                             </div>
                             <div>
-                                <label htmlFor="password" className="sr-only">
-                                    Password
-                                </label>
+                                <label htmlFor="password" className="sr-only">Password</label>
                                 <input
-                                    id="password"
+                                    className="relative block w-full appearance-none rounded-none rounded-t-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                                    onChange={(e) => changeHandler(e)}
+                                    value={user.password}
+                                    type="text"
                                     name="password"
-                                    type="password"
-                                    autoComplete="current-password"
-                                    required
-                                    className="relative block w-full appearance-none rounded-none rounded-b-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                                     placeholder="Password"
                                 />
                             </div>

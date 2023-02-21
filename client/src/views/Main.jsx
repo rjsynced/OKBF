@@ -1,13 +1,54 @@
 import React, { useEffect, useState } from 'react'
-// import { Link } from 'react-router-dom';
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 import KeyboardList from '../components/KBList';
 import KeycapList from '../components/KCList';
+import Login from '../components/Login';
+import Register from '../components/Register';
 
-const Main = () => {
+const Main = (props) => {
     const [keyboards, setKeyboards] = useState([]);
     const [keycaps, setKeycaps] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const [registered, setRegistered] = useState(true)
+    const [loginErrors, setLoginErrors] = useState()
+    const [errors, setErrors] = useState([])
+    const navigate = useNavigate()
+
+    const newUser = (user) => {
+        axios.post('http://localhost:8000/api/users/new', user, {withCredentials: true})
+            .then(res => {
+                if (res.data.message === "User already exists") {
+                    setErrors([res.data.message])
+                } else {
+                    navigate(`/users/home`)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                const errorResponse = err.response.data.errors
+                const errorArr = []
+
+                for (const key in errorResponse) {
+                    errorArr.push(errorResponse[key].message)
+                }
+                setErrors(errorArr)
+            })
+            .catch(err => console.log(err))
+        setLoaded(false)
+    }
+
+    const login = (user) => {
+        axios.post('http://localhost:8000/api/users/login', user, {withCredentials: true}
+        )
+            .then(res => {
+                navigate(`/`)
+            })
+            .catch(err => {
+                console.log(err)
+                setLoginErrors(err.response.data.msg)
+            })
+    }
 
     useEffect(() => {
         axios.get('http://localhost:8000/api/keyboards')
@@ -61,6 +102,9 @@ const Main = () => {
             </div>
             {loaded && <KeyboardList keyboards={keyboards} />}
             {loaded && <KeycapList keycaps={keycaps} />}
+            {registered ? <Login onSubmitProp={login} errors={loginErrors} />
+                : <Register onSubmitProp={newUser} initialFirstName="" initialLastName="" initialEmail="" errors={errors} />    
+            }
 
         </div>
     )
